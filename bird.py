@@ -7,7 +7,24 @@ import joblib
 import numpy as np
 import librosa
 import plotly.express as px
-import wikipediaapi
+import wikipedia
+
+def fetch_wikipedia_info(bird_name):
+    try:
+        page = wikipedia.page(bird_name)
+        # Get the first section or big title
+        first_section = next(iter(page.sections), None)
+        if first_section:
+            title = first_section.title
+            text = first_section.text
+            
+             # Take the first image if available
+            
+            return title, text
+        else:
+            return bird_name, page.summary  # Fallback to summary if no section is found
+    except wikipedia.exceptions.PageError:
+        return bird_name, "No information available on Wikipedia."
 
 # Load the model
 model = joblib.load('audio_classifier_model.joblib')
@@ -23,7 +40,7 @@ def extract_features(file_path):
 
 
 # Function to fetch Wikipedia information
-def fetch_wikipedia_info(bird_name):
+#def fetch_wikipedia_info(bird_name):
     # wiki_wiki = wikipediaapi.Wikipedia('en', user_agent='adardournaima70@gmail.com')
 
     # page = wiki_wiki.page(bird_name)
@@ -36,7 +53,7 @@ def fetch_wikipedia_info(bird_name):
     #         return bird_name, page.summary  # Fallback to summary if no section is found
     # else:
     #     return bird_name, "No information available on Wikipedia."
-    pass
+    #pass
 
 
 # Set page configuration
@@ -141,19 +158,16 @@ if audio_file is not None:
     features = np.array(features).reshape(1, -1)
     prediction = model.predict(features)
 
-   
     # Find the first occurrence of the predicted encoded_label
     label_info = class_mapping_data[class_mapping_data['encoded_label'] == prediction[0]].iloc[0]
-    st.write(f"Predicted Bird Call: {label_info['primary_label']}")
+    st.write(f"The bird is: {label_info['scientific_name']}")
 
-   
-    wiki_wiki=wikipediaapi.Wikipedia('en', user_agent="adardournaima70@gmail.com")
-    page = wiki_wiki.page("Bird vocalization")
-    # wiki_title, wiki_info = fetch_wikipedia_info(label_info['primary_label'])
-    st.write(f"**Wikipedia Information:**")
-    # st.write(f"**{wiki_title}**")
-    # st.write(f"{wiki_info}")
-# Create a DataFrame for plotting
+# Fetch Wikipedia information and the first image
+    wiki_title, wiki_info = fetch_wikipedia_info(label_info['scientific_name'])
+    st.write(f"**{wiki_title}**")
+    st.write(f"{wiki_info}")
+
+    # Create a DataFrame for plotting
     tmp = class_mapping_data[class_mapping_data['encoded_label'] == prediction[0]].copy()
     
     # Create a scatter mapbox plot
