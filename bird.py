@@ -6,6 +6,8 @@ import streamlit as st
 import joblib
 import numpy as np
 import librosa
+import plotly.express as px
+import wikipediaapi
 
 # Load the model
 model = joblib.load('audio_classifier_model.joblib')
@@ -18,6 +20,24 @@ def extract_features(file_path):
     mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
     flattened_features = np.mean(mfccs.T, axis=0)
     return flattened_features
+
+
+# Function to fetch Wikipedia information
+def fetch_wikipedia_info(bird_name):
+    # wiki_wiki = wikipediaapi.Wikipedia('en', user_agent='adardournaima70@gmail.com')
+
+    # page = wiki_wiki.page(bird_name)
+    # if page.exists():
+    #     # Get the first section or big title
+    #     first_section = next(iter(page.sections), None)
+    #     if first_section:
+    #         return first_section.title, first_section.text
+    #     else:
+    #         return bird_name, page.summary  # Fallback to summary if no section is found
+    # else:
+    #     return bird_name, "No information available on Wikipedia."
+    pass
+
 
 # Set page configuration
 st.set_page_config(
@@ -121,17 +141,39 @@ if audio_file is not None:
     features = np.array(features).reshape(1, -1)
     prediction = model.predict(features)
 
-    for index, row in class_mapping_data.iterrows():
-        if row['encoded_label_y'] == prediction[0]:
-            st.write(f"The predicted bird species is: {row['primary_label']}")
- 
+   
+    # Find the first occurrence of the predicted encoded_label
+    label_info = class_mapping_data[class_mapping_data['encoded_label'] == prediction[0]].iloc[0]
+    st.write(f"Predicted Bird Call: {label_info['primary_label']}")
 
-# Add a button
+   
+    wiki_wiki=wikipediaapi.Wikipedia('en', user_agent="adardournaima70@gmail.com")
+    page = wiki_wiki.page("Bird vocalization")
+    # wiki_title, wiki_info = fetch_wikipedia_info(label_info['primary_label'])
+    st.write(f"**Wikipedia Information:**")
+    # st.write(f"**{wiki_title}**")
+    # st.write(f"{wiki_info}")
+# Create a DataFrame for plotting
+    tmp = class_mapping_data[class_mapping_data['encoded_label'] == prediction[0]].copy()
+    
+    # Create a scatter mapbox plot
+    fig = px.scatter_mapbox(
+        tmp,
+        lat="latitude",
+        lon="longitude",
+        color="primary_label",
+        zoom=10,
+        title='Bird Recordings Location'
+    )
 
-# Add a button
-if st.button("Predict Bird Call", key="button1"):
-    st.write("Button Clicked!")
+    # Update the layout of the plot to use the "open-street-map" style for the map background
+    fig.update_layout(mapbox_style="open-street-map")
 
+    # Update the layout of the plot to set the margin around the map
+    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+
+    # Display the scatter mapbox plot
+    st.plotly_chart(fig, use_container_width=True)
 # Apply CSS to modify button appearance
 button_style = """
     <style>
