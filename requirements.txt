@@ -1,4 +1,4 @@
-Cython==3.0.10
+cython==3.0.10
 attr==0.3.2
 ConfigParser==7.0.0
 cryptography==42.0.7
