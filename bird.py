@@ -8,7 +8,7 @@ import numpy as np
 import librosa
 import plotly.express as px
 import wikipedia
-@st.cache
+@st.cache_data
 def fetch_wikipedia_info(bird_name):
     try:
         page = wikipedia.page(bird_name)
@@ -30,7 +30,7 @@ def fetch_wikipedia_info(bird_name):
 model = joblib.load('audio_classifier_model.joblib')
 class_mapping_data = pd.read_csv('unique_merged_data.csv')  # Adjust the path as necessary
 
-@st.cache
+@st.cache_data
 # Define the feature extraction function
 def extract_features(file_path):
     audio, sample_rate = librosa.load(file_path)
