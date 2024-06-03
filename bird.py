@@ -151,7 +151,7 @@ custom_css = """
 # Inject custom CSS
 st.markdown(custom_css, unsafe_allow_html=True)
 # Add the file uploader with the customized style
-audio_file = st.file_uploader("", type=["ogg", "mp3", "wav"])
+audio_file = st.file_uploader("Upload", type=["ogg", "mp3", "wav"], label_visibility="collapsed")
 # Check if audio file is uploaded
 if audio_file is not None:
     features = extract_features(audio_file)
