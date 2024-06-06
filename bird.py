@@ -181,7 +181,7 @@ if audio_file is not None:
     )
 
     # Update the layout of the plot to use the "open-street-map" style for the map background
-    fig.update_layout(mapbox_style="carto-positron")
+    fig.update_layout(mapbox_style="open-street-map")
 
     # Update the layout of the plot to set the margin around the map
     fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
