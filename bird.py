@@ -181,31 +181,10 @@ if audio_file is not None:
     )
 
     # Update the layout of the plot to use the "open-street-map" style for the map background
-    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(mapbox_style="carto-positron")
 
     # Update the layout of the plot to set the margin around the map
     fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
 
     # Display the scatter mapbox plot
     st.plotly_chart(fig, use_container_width=True)
-# Apply CSS to modify button appearance
-button_style = """
-    <style>
-        div.stButton > button {
-            background-color: #e59A62;
-            color: black;
-            height: 50px;
-            width: 200px;
-            font-size: 16px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            item-align: center;
-        }
-        div.stButton > button:hover {
-            background-color: #A75211;
-            color: white;
-        }
-    </style>
-"""
-st.markdown(button_style, unsafe_allow_html=True)
