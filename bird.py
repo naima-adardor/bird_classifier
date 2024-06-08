@@ -170,42 +170,35 @@ if audio_file is not None:
     # Create a DataFrame for plotting
     tmp = class_mapping_data[class_mapping_data['encoded_label'] == prediction[0]].copy()
     
-    # Create a scatter mapbox plot
+ # Define the boundaries for the Western Ghats region
+    lower_latitude = 8
+    upper_latitude = 22
+    lower_longitude = 73
+    upper_longitude = 79
+
+    # Filter the data to include only recordings within the Western Ghats region
+    filtered_data = tmp[(tmp['latitude'] >= lower_latitude) & 
+                        (tmp['latitude'] <= upper_latitude) &
+                        (tmp['longitude'] >= lower_longitude) &
+                        (tmp['longitude'] <= upper_longitude)]
+
+    # Create a scatter mapbox plot for the filtered data
     fig = px.scatter_mapbox(
-        tmp,
+        filtered_data,
         lat="latitude",
         lon="longitude",
         color="primary_label",
-        zoom=10,
-        title='Bird Recordings Location'
+        zoom=5,  # Adjust the zoom level as needed
+        center={"lat": (lower_latitude + upper_latitude) / 2, "lon": (lower_longitude + upper_longitude) / 2},
+        title="Bird Recordings Location in the Western Ghats"
     )
 
-    # Update the layout of the plot to use the "open-street-map" style for the map background
-    fig.update_layout(mapbox_style="open-street-map")
-
-    # Update the layout of the plot to set the margin around the map
-    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+    # Update the layout of the plot
+    fig.update_layout(
+        mapbox_style="open-street-map",  # Use the "open-street-map" style for the map background
+        margin={"r":0, "t":30, "l":0, "b":0},  # Set the margin around the map
+    )
 
     # Display the scatter mapbox plot
     st.plotly_chart(fig, use_container_width=True)
-# Apply CSS to modify button appearance
-button_style = """
-    <style>
-        div.stButton > button {
-            background-color: #e59A62;
-            color: black;
-            height: 50px;
-            width: 200px;
-            font-size: 16px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            item-align: center;
-        }
-        div.stButton > button:hover {
-            background-color: #A75211;
-            color: white;
-        }
-    </style>
-"""
-st.markdown(button_style, unsafe_allow_html=True)
+    st.write("Map showing the location of bird recordings in the Western Ghats region.")
